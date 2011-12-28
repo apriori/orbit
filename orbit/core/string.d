@@ -284,7 +284,7 @@ in
 }
 body
 {
-	return str[beginIndex .. endIndex];
+	return str[beginIndex .. endIndex].idup;
 }
 
 /**
@@ -320,7 +320,7 @@ in
 }
 body
 {
-	return str[beginIndex .. endIndex];
+	return str[beginIndex .. endIndex].idup;
 }
 
 /**
@@ -356,7 +356,7 @@ in
 }
 body
 {
-	return str[beginIndex .. endIndex];
+	return str[beginIndex .. endIndex].idup;
 }
 
 /**
@@ -497,7 +497,7 @@ body
 			end = str.length;
 	}
 	
-	return str[pos .. end];
+	return str[pos .. end].idup;
 }
 
 /**
@@ -542,7 +542,7 @@ body
 			end = str.length;
 	}
 	
-	return str[pos .. end];
+	return str[pos .. end].idup;
 }
 
 /**
@@ -600,86 +600,24 @@ body
  *     
  * Returns: the index of the substring or size_t.max when nothing was found
  */
-size_t find (string str, string sub, size_t start = 0)
+T find(T)(T str, T sub, size_t start = 0) if(std.traits.isSomeString(T))
 {
-	version (Tango)
-	{
-		size_t index = str.locatePattern(sub, start);
-		
-		if (index == str.length)
-			return size_t.max;
-		
-		return index;
-	}
-	
-	else {
-        if (str.length < start) {
-            return size_t.max;
-        }
-            
-		return std.string.indexOf(str[start..$], sub);
+    if(start > str.length)
+    {
+        return size_t.max;
     }
+
+    size_t ret = std.string.indexOf(str[start..$], sub);
+
+    //prevent overflow
+    if(ret != size_t.max)
+    {
+        //make index relative to string start
+        ret += start;
+    }
+    return ret;
 }
 
-/**
- * Finds the first occurence of sub in str
- * 
- * Params:
- *     str = the string to find in
- *     sub = the substring to find
- *     start = where to start finding
- *     
- * Returns: the index of the substring or size_t.max when nothing was found
- */
-size_t find (wstring str, wstring sub, size_t start = 0)
-{
-	version (Tango)
-	{
-		size_t index = str.locatePattern(sub, start);
-		
-		if (index == str.length)
-			return size_t.max;
-		
-		return index;
-	}
-	
-	else {
-        if (str.length < start) {
-            return size_t.max;
-        }
-		return std.string.indexOf(str[start..$], sub);
-    }
-}
-
-/**
- * Finds the first occurence of sub in str
- * 
- * Params:
- *     str = the string to find in
- *     sub = the substring to find
- *     start = where to start finding
- *     
- * Returns: the index of the substring or size_t.max when nothing was found
- */
-size_t find (dstring str, dstring sub, size_t start = 0)
-{
-	version (Tango)
-	{
-		size_t index = str.locatePattern(sub, start);
-		
-		if (index == str.length)
-			return size_t.max;
-		
-		return index;
-	}
-	
-	else {
-        if (str.length < start) {
-            return size_t.max;
-        }
-		return std.string.indexOf(str[start..$], sub);
-    }
-}
 
 /**
  * Compares to strings, ignoring case differences. Returns 0 if the content
