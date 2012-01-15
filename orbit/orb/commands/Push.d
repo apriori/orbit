@@ -25,7 +25,7 @@ class Push : Command
 	{
 		scope repository = Repository.instance(arguments["source"].value);
 		scope orb = Orb.load(orbPath);
-		
+
 		repository.api.upload(orb);
 	}
 	
